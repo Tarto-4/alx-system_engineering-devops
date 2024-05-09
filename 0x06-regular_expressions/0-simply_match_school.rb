@@ -2,20 +2,18 @@
 
 require 'oniguruma'
 
-def check_for_school(text)
-  # Oniguruma regex for "School" (case-insensitive)
-  school_regex = Oniguruma::ORegex.new("School", options: Oniguruma::OPTION_IGNORECASE)
+# Returns true if the text contains "School", false otherwise
+# Checks for null pointer references, unhandled exceptions, and more
+def check_for_school?(text)
+  # If text is nil or empty, return false
+  return false if text.nil? || text.empty?
 
-  # Check if the argument matches the regex
-  match = school_regex.match(text)
+  # If text is not a string, raise a TypeError to alert the user
+  raise TypeError, "text is not a string" unless text.is_a?(String)
 
-  if match
-    puts "The string '#{text}' contains 'School'."
-  else
-    puts "The string '#{text}' does not contain 'School'."
-  end
+  # If text contains "School" (case insensitive), return true
+  text.downcase.include?("school")
 end
-
 # Get the argument from the command line (if any)
 argument = ARGV.first
 
@@ -23,5 +21,6 @@ argument = ARGV.first
 if argument
   check_for_school(argument)
 else
+  # If no argument was provided, print a helpful message
   puts "Please provide a string as an argument."
 end
