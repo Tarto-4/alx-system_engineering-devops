@@ -1,5 +1,4 @@
 # Creates a file named 'school' in /tmp with specific ownership and permissions.
-
 file { '/tmp/school':
   ensure  => file,
   owner   => 'www-data',
