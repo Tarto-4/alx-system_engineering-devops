@@ -1,6 +1,12 @@
-# SSH Script to Connect with Private Key
+# SSH Configuration and Key Management
 
-This Bash script is designed to establish an SSH connection to a remote server using a private key.
+This project focuses on SSH configuration and key management for secure, passwordless authentication to remote servers.
+
+## Scripts
+
+* `0-use_a_private_key`: Connects to a server using a private key (~/.ssh/school) as the user ubuntu.
+* `1-create_ssh_key_pair`: Creates an RSA key pair with a specified name, bit size, and passphrase.
+* `2-ssh_config`: Contains SSH client configuration to use a private key and disable password authentication.
 
 ## Requirements
 
@@ -10,23 +16,6 @@ This Bash script is designed to establish an SSH connection to a remote server u
 
 ## Usage
 
-1. **Make the script executable:**
-
+1. **Make scripts executable:**
    ```bash
-   chmod +x 0-use_a_private_key
-
-# RSA Key Pair Generation Script
-
-This Bash script generates an RSA key pair with specific parameters for secure SSH authentication.
-
-## Requirements
-
-* **Operating System:** Ubuntu 20.04 LTS
-* **OpenSSH:** OpenSSH client installed (`ssh-keygen` command)
-
-## Usage
-
-1. **Make the script executable:**
-
-   ```bash
-   chmod +x 1-create_ssh_key_pair
+   chmod +x *.sh
