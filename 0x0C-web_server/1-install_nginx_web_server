@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+# Installs Nginx, configures it to listen on port 80, and serves a "Hello World!" page.
+# Update package lists
+apt-get update -y
+# Install Nginx
+apt-get install -y nginx
+# Create custom "Hello World!" page
+echo "Hello World!" > /var/www/html/index.nginx-debian.html
+# Test Nginx configuration (optional)
+nginx -t
+# Restart Nginx
+nginx -s reload
