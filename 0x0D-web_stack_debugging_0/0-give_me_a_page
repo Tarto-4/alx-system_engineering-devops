@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Starts Apache and enables it to start on boot.
+service apache2 start
+update-rc.d apache2 enable
