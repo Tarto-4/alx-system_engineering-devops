@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# Configure Nginx to add a custom HTTP response header
+
+# Update package lists and install Nginx if not already installed
+
+apt update
+apt install -y nginx
+
+# Get the hostname of the current server
+hostname=$(hostname)
+
+# Create the configuration snippet to add the custom header
+cat << EOF > /etc/nginx/snippets/custom_header.conf
+add_header X-Served-By $hostname;
+EOF
+
+# Include the custom header snippet in the Nginx configuration
+sed -i '/include \/etc\/nginx\/mime.types;/a \    include \/etc\/nginx\/snippets\/custom_header.conf;' /etc/nginx/sites-enabled/default
+
+# Test the Nginx configuration and reload if successful
+if nginx -t; then
+    systemctl reload nginx
+else
+    echo "Nginx configuration test failed. Please check the error log for details."
+fi
