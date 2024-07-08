@@ -1,20 +1,62 @@
 #!/usr/bin/env bash
-# Install and configure HAProxy on lb-01
-sudo apt update
-sudo apt install haproxy -y
 
-# Configure HAProxy
-sudo tee /etc/haproxy/haproxy.cfg <<EOF 
+# Install and configure HAProxy as a load balancer on a new Ubuntu machine
+
+# Update package lists and install HAProxy if not present
+if ! command -v haproxy &> /dev/null; then
+    apt-get update
+    apt-get install -y haproxy
+fi
+
+# Define web server details
+web_servers=(
+    "web-01 3.84.222.117:80 check"
+    "web-02 34.207.253.96:80 check"
+)
+
+# Create the configuration string for the backend servers
+backend_config=""
+for server in "${web_servers[@]}"; do
+    backend_config+="    server $server\n"
+done
+
+# Configure HAProxy using heredoc for better readability and maintainability
+cat <<EOF > /etc/haproxy/haproxy.cfg
+global
+    maxconn 4096
+    log /dev/log    local0
+    log /dev/log    local1 notice
+    chroot /var/lib/haproxy
+    user haproxy
+    group haproxy
+    daemon
+
+defaults
+    log     global
+    mode    http
+    option  httplog
+    option  dontlognull
+    timeout connect 5000
+    timeout client  50000
+    timeout server  50000
+    errorfile 400 /etc/haproxy/errors/400.http
+    errorfile 500 /etc/haproxy/errors/500.http
+    errorfile 503 /etc/haproxy/errors/503.http
+
 frontend web_traffic
-  bind *:80
-  default_backend web_servers
+    bind *:80
+    default_backend web_servers
 
 backend web_servers
-  balance roundrobin
-  server web-01 3.84.222.117:80 check
-  server web-02 34.207.253.96:80 check
+    mode http
+    balance roundrobin
+    option httpclose
+    option forwardfor
+    http-request set-header X-Forwarded-Port %[dst_port]
+    http-request add-header X-Forwarded-Proto https if { ssl_fc }
+$backend_config
 EOF
 
-#Enable and Start the HAProxy Service
-sudo systemctl enable haproxy
-sudo systemctl start haproxy
+# Enable and start HAProxy
+systemctl enable haproxy
+systemctl start haproxy
