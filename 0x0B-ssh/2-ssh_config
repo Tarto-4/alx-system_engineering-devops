@@ -1,4 +1,4 @@
 # SSH configuration to use private key (~/.ssh/school) and disable password authentication
-Host 52.3.254.199*
+Host 3.84.222.117*
     IdentityFile ~/.ssh/school
     PasswordAuthentication no
