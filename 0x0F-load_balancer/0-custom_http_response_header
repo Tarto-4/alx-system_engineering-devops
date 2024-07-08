@@ -1,35 +1,31 @@
 #!/usr/bin/env bash
-# Configure Nginx to add a custom HTTP response header on web-01 and web-02
+# Configure Nginx so that its HTTP response contains a custom header (on web-01 and web-02)
+# The name of the custom HTTP header must be X-Served-By
+# The value of the custom HTTP header must be the hostname of the server Nginx is running on
+sudo apt-get update
+sudo apt-get -y install nginx
 
-servers=(
-  "ubuntu@3.84.222.117" # web-01
-  "ubuntu@34.207.253.96" # web-02
-)
+# configure firewall to allow request through port 80
+sudo ufw allow 'Nginx HTTP'
 
-for server in "${servers[@]}"; do
-  ssh $server <<EOF
-    # Update package lists and install Nginx if not already installed
-    sudo apt update
-    sudo apt install -y nginx
+sudo mkdir -p /var/www/html
 
-    # Get the hostname of the current server
-    hostname=\$(hostname)
+# change permissions to allow us to easily create files in this directory
+sudo chmod -R 755 /var/www
 
-    # Create or update the configuration snippet to add the custom header
-    sudo tee /etc/nginx/snippets/custom_header.conf > /dev/null << HEADERCONTENT
-    add_header X-Served-By \$hostname;
-HEADERCONTENT
+#  create the index page
+echo 'Hello World!' |sudo tee  /var/www/html/index.html
 
-    # Include the custom header snippet in the Nginx configuration if not already included
-    if ! grep -q "include /etc/nginx/snippets/custom_header.conf;" /etc/nginx/sites-enabled/default; then
-      sudo sed -i '/include \/etc\/nginx\/mime.types;/a \    include \/etc\/nginx\/snippets\/custom_header.conf;' /etc/nginx/sites-enabled/default
-    fi
+# create a webpage for error 404
+echo "Ceci n'est pas une page" |sudo tee /var/www/html/404.html
 
-    # Test the Nginx configuration and reload if successful
-    if sudo nginx -t; then
-        sudo systemctl reload nginx
-    else
-        echo "Nginx configuration test failed. Please check the error log for details."
-    fi
-EOF
-done
+# code to configure redirect for a single page(/redirect_me) and add header to display hostname
+string_for_replacement="server_name _;\n\tadd_header X-Served-By \$hostname;\n\trewrite ^\/redirect_me https://github.com/Tarto-4 permanent;"
+sudo sed -i "s/server_name _;/$string_for_replacement/" /etc/nginx/sites-enabled/default
+
+# code to configure redirect for 404 error page
+string_for_replacement="listen 80 default_server;\n\terror_page 404 \/404.html;\n\tlocation = \/404.html {\n\t\troot \/var\/www\/html;\n\t\tinternal;\n\t}"
+sudo sed -i "s/listen 80 default_server;/$string_for_replacement/" /etc/nginx/sites-enabled/default
+
+# restart the web server after updating the settings
+sudo service nginx restart
