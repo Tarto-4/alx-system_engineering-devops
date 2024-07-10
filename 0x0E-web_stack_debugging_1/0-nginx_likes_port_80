@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Script to resolve Nginx issues with port 80
+
+# 1. Check if something else is using port 80
+if netstat -tulpn | grep :80 | grep -v nginx; then
+    echo "Another process is using port 80. Killing it..."
+    sudo fuser -k 80/tcp  # Terminate the process
+fi
+
+# 2. Ensure Nginx is installed and running
+if ! command -v nginx &> /dev/null; then
+    echo "Installing Nginx..."
+    sudo apt-get update
+    sudo apt-get install -y nginx
+else
+    echo "Starting Nginx..."
+    sudo systemctl start nginx
+fi
+
+# 3. Allow traffic through the firewall (if enabled)
+if command -v ufw &> /dev/null && sudo ufw status | grep -q active; then
+    echo "Allowing port 80 through firewall..."
+    sudo ufw allow 80/tcp
+fi
+
+# 4. Ensure Nginx configuration is valid
+echo "Checking Nginx configuration..."
+if ! nginx -t; then
+    echo "Nginx configuration has errors. Please check the logs."
+    exit 1  # Indicate failure
+fi
+
+# 5. Reload Nginx to apply changes
+echo "Reloading Nginx..."
+sudo systemctl reload nginx
