@@ -1,16 +1,28 @@
 #!/usr/bin/env bash
-# Bash script that will display information about subdomains
-domain () {
-if [ "$2" ];
-then
-    echo -n "The subdomain $2 is a"
-    dig "$2.$1" | grep -A1 'ANSWER SECTION:' | awk '{print " " $4 " record and points to " $5}' | tail -n 1
-else
-    for i in www lb-01 web-01 web-02
-    do
-        echo -n "The subdomain $i is a"
-        dig "$i.$1" | grep -A1 'ANSWER SECTION:' | awk '{print " " $4 " record and points to " $5}' | tail -n 1
-    done
-fi
+# This script displays information about DNS records for specified subdomains.
+
+# Function to extract record type and destination IP from dig output
+get_record_info() {
+    dig +short "$1" | awk 'BEGIN {FS=" "} {print $1, $NF}'
 }
-domain "$1" "$2"
+
+# Main function to handle subdomain checks
+check_subdomains() {
+    local domain="$1"
+    local subdomains="${2:-www lb-01 web-01 web-02}"  # Default to all if not specified
+
+    for subdomain in $subdomains; do
+        record_info=$(get_record_info "$subdomain.$domain")
+
+        if [[ -n "$record_info" ]]; then  # Check for successful dig output
+            echo "The subdomain $subdomain is a ${record_info% *} record and points to ${record_info#* }"
+        else
+            echo "No DNS record found for subdomain $subdomain.$domain"
+        fi
+    done
+}
+
+# Execute the main function if called directly
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    check_subdomains "$@"  # Pass all arguments to the function
+fi
