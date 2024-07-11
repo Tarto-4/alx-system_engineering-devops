@@ -1,28 +1,17 @@
 #!/usr/bin/env bash
-# This script displays information about DNS records for specified subdomains.
+# shellcheck disable=SC2086
+# Information about server domains
 
-# Function to extract record type and destination IP from dig output
-get_record_info() {
-    dig +short "$1" | awk 'BEGIN {FS=" "} {print $1, $NF}'
+check_domain() {
+    # Check for a valid domain
+    SUBDOMAINS=("www"  "lb-01" "web-01" "web-02")
+    if [ -z "$2" ]; then
+	for i in "${SUBDOMAINS[@]}"; do
+	    dig "$i.$1" | grep -A1 'ANSWER SECTION:' | tail -n1 | awk '{split($0, SUBDOMAIN, "."); print "The subdomain " SUBDOMAIN[1] " is a " $4 " record and points to " $5}'
+	done
+    else
+	dig "$2.$1" | grep -A1 'ANSWER SECTION:' | tail -n1 | awk '{split($0, SUBDOMAIN, "."); print "The subdomain " SUBDOMAIN[1] " is a " $4 " record and points to " $5}'
+    fi
 }
 
-# Main function to handle subdomain checks
-check_subdomains() {
-    local domain="$1"
-    local subdomains="${2:-www lb-01 web-01 web-02}"  # Default to all if not specified
-
-    for subdomain in $subdomains; do
-        record_info=$(get_record_info "$subdomain.$domain")
-
-        if [[ -n "$record_info" ]]; then  # Check for successful dig output
-            echo "The subdomain $subdomain is a ${record_info% *} record and points to ${record_info#* }"
-        else
-            echo "No DNS record found for subdomain $subdomain.$domain"
-        fi
-    done
-}
-
-# Execute the main function if called directly
-if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
-    check_subdomains "$@"  # Pass all arguments to the function
-fi
+check_domain "$1" "$2"
