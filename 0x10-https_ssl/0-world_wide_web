@@ -1,0 +1,26 @@
+#!/usr/bin/env bash
+
+# This script displays information about DNS records for specified subdomains.
+
+# Function to extract record type and destination IP from dig output
+get_record_info() {
+    dig "$1" +short | awk 'BEGIN {FS=" "} {print $1, $NF}'
+}
+
+# Main script logic
+main() {
+    domain="$1"
+    subdomain="${2:-www lb-01 web-01 web-02}"  # Default to all subdomains if not specified
+
+    for sub in $subdomain; do
+        record_type=$(get_record_info "$sub.$domain")
+        if [[ -n "$record_type" ]]; then
+            echo "The subdomain $sub is a ${record_type% *} record and points to ${record_type#* }"
+        fi
+    done
+}
+
+# Call the main function if the script is executed directly
+if [[ "${BASH_SOURCE[0]}" == "${0}" ]]; then
+    main "$@"
+fi
