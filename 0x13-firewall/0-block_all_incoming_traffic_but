@@ -1,0 +1,28 @@
+#!/bin/bash
+
+# Ensure script is run as root
+if [[ $EUID -ne 0 ]]; then
+    echo "This script must be run as root" 
+    exit 1
+fi
+
+# Install ufw if not already installed
+if ! command -v ufw &> /dev/null; then
+    apt-get update
+    apt-get install -y ufw
+fi
+
+# Reset ufw to default settings
+ufw --force reset
+
+# Configure ufw rules
+ufw default deny incoming
+ufw allow 22/tcp     # Allow SSH
+ufw allow 443/tcp    # Allow HTTPS
+ufw allow 80/tcp     # Allow HTTP
+
+# Enable ufw
+ufw --force enable
+
+# Display ufw status
+ufw status verbose
