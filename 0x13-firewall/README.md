@@ -1,6 +1,6 @@
 # Setting up ufw Firewall on web-01
 
-This repository contains a bash script (setup_firewall.sh) that automates the configuration of the ufw firewall on web-01 server. The script ensures that only essential incoming TCP ports (22 for SSH, 443 for HTTPS, and 80 for HTTP) are allowed, while blocking all other incoming traffic.
+This repository contains a bash script (0-block_all_incoming_traffic_but.sh) that automates the configuration of the ufw firewall on web-01 server. The script ensures that only essential incoming TCP ports (22 for SSH, 443 for HTTPS, and 80 for HTTP) are allowed, while blocking all other incoming traffic.
 Requirements
 
     Server: web-01
@@ -12,7 +12,7 @@ Usage
 
     bash
 
-git clone https://github.com/your-username/alx-system_engineering-devops.git
+git clone https://github.com/tarto-4/alx-system_engineering-devops.git
 
 Navigate to the Directory: Go to the directory containing the firewall setup script.
 
@@ -24,13 +24,13 @@ Make the Script Executable: Ensure that the bash script has execute permissions.
 
 bash
 
-chmod +x setup_firewall.sh
+chmod +x 0-block_all_incoming_traffic_but.sh
 
 Run the Script: Execute the script with root privileges to set up the ufw firewall.
 
 bash
 
-sudo ./setup_firewall.sh
+sudo ./0-block_all_incoming_traffic_but.sh
 
 Verify ufw Status: After running the script, verify the ufw status to ensure the rules are applied correctly.
 
@@ -40,7 +40,7 @@ bash
 
 Explanation
 
-The setup_firewall.sh script performs the following actions:
+The 0-block_all_incoming_traffic_but.sh script performs the following actions:
 
     Checks if the script is run as root.
     Installs ufw if it's not already installed.
