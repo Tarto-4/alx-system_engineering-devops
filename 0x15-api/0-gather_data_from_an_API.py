@@ -1,3 +1,5 @@
+# 0-gather_data_from_an_API.py
+
 #!/usr/bin/python3
 """
 This module fetches data from the JSONPlaceholder API and prints
@@ -39,7 +41,9 @@ def main():
 
     employee_name = user_data.get('name')
     total_tasks = len(todos_data)
-    completed_tasks = [task for task in todos_data if task.get('completed')]
+    completed_tasks = [
+        task for task in todos_data if task.get('completed')
+    ]
 
     print(f"Employee {employee_name} is done with tasks"
           f"({len(completed_tasks)}/{total_tasks}):")
