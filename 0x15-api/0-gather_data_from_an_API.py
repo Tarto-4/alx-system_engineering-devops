@@ -12,7 +12,6 @@ Usage:
 import requests
 import sys
 
-
 def main():
     """
     Main function that retrieves employee and TODO data from the API,
@@ -41,15 +40,12 @@ def main():
 
     employee_name = user_data.get('name')
     total_tasks = len(todos_data)
-    completed_tasks = [
-        task for task in todos_data if task.get('completed')
-    ]
+    completed_tasks = [task for task in todos_data if task.get('completed')]
 
-    print(f"Employee {employee_name} is done with tasks"
+    print(f"Employee {employee_name} is done with tasks "
           f"({len(completed_tasks)}/{total_tasks}):")
     for task in completed_tasks:
         print(f"\t {task.get('title')}")
-
 
 if __name__ == "__main__":
     main()
