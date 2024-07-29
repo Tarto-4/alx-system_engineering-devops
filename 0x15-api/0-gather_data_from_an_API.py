@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 """
-This module fetches data from the JSONPlaceholder API and prints the progress of an employee's TODO list.
+This module fetches data from the JSONPlaceholder API and prints
+the progress of an employee's TODO list.
 
 Usage:
     ./0-gather_data_from_an_API.py <employee_id>
@@ -8,6 +9,7 @@ Usage:
 
 import requests
 import sys
+
 
 def main():
     """
@@ -39,9 +41,11 @@ def main():
     total_tasks = len(todos_data)
     completed_tasks = [task for task in todos_data if task.get('completed')]
 
-    print(f"Employee {employee_name} is done with tasks({len(completed_tasks)}/{total_tasks}):")
+    print(f"Employee {employee_name} is done with tasks"
+          f"({len(completed_tasks)}/{total_tasks}):")
     for task in completed_tasks:
         print(f"\t {task.get('title')}")
+
 
 if __name__ == "__main__":
     main()
