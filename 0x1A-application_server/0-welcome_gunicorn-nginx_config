@@ -1,7 +1,7 @@
 # nginx configuration
 server {
     listen 80;
-    server_name 35.227.39.114;
+    server_name 3.84.222.117;
 
     location / {
         try_files $uri $uri/ =404;
